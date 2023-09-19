@@ -105,12 +105,19 @@ class MLoger(object):
 
   def getLogger(self,name):
     if self.logger is None:
-      self.loadBasicConfig()
+      #self.loadBasicConfig()
       self.initSession()
       logger = logging.getLogger(name)
-      th = ConcurrentRotatingFileHandler(filename=self.filename, mode='a', maxBytes=200 * 1024 * 1024, backupCount=8)
-      logger.addHandler(th)
+      logger.setLevel(self.level)
+
+      if not logger.handlers:
+        th = ConcurrentRotatingFileHandler(filename=self.filename, mode='a', maxBytes=200 * 1024 * 1024, backupCount=8)
+        formatter = logging.Formatter(self.formatter,datefmt='%Y-%m-%dT%I:%M:%S')
+        th.setFormatter(formatter)
+        logger.addHandler(th)
+
       self.logger = MLoggerAdapter(logger, self.extra_dict)
+      print("logger.handlers: %s" % logger.handlers)
 
     return self.logger
 
