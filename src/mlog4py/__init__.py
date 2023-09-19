@@ -2,6 +2,7 @@
 #coding:utf-8
 
 import logging
+from cloghandler import ConcurrentRotatingFileHandler
 
 try:
     import thread
@@ -93,7 +94,6 @@ class MLoger(object):
   def loadBasicConfig(self):
     logging.basicConfig(filename=self.filename, level=self.level, format=self.formatter, datefmt='%Y-%m-%dT%I:%M:%S')
 
-  # 配置session变量
   def initSession(self):
     for key in self.extra_dict:
       if 'psm' is key:
@@ -108,7 +108,10 @@ class MLoger(object):
       self.loadBasicConfig()
       self.initSession()
       logger = logging.getLogger(name)
+      th = ConcurrentRotatingFileHandler(filename=self.filename, mode='a', maxBytes=200 * 1024 * 1024, backupCount=8)
+      logger.addHandler(th)
       self.logger = MLoggerAdapter(logger, self.extra_dict)
+
     return self.logger
 
 class RootLogger(MLoger):
@@ -131,7 +134,6 @@ def _releaseLock():
         _lock.release()
 
 
-# 配置
 def basicConfig(**kwargs):
   _acquireLock()
   try:

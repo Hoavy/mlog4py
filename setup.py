@@ -35,6 +35,9 @@ setup(
     author_email='d@wanghaowei.com',
     
     python_requires='>=2.7',
+    install_requires=[
+        'ConcurrentLogHandler>=0.9',
+    ],
     package_dir={
         '': 'src',
         },
