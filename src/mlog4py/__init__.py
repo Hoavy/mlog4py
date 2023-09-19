@@ -9,7 +9,10 @@ try:
 except ImportError:
     thread = None
 
-from utils import generate_trace_id, getHostName
+try:
+  from utils import generate_trace_id,getHostName
+except ImportError:
+  from mlog4py.utils import generate_trace_id,getHostName
 
 CRITICAL = logging.CRITICAL
 FATAL = logging.FATAL
@@ -63,7 +66,7 @@ class MLoger(object):
     self.config = None
     self.logger = None
     self.extra_dict = {"psm":'-',"traceid": '-', "spanid": '-', "hostname": '-', "tags": '-'}
-    self.formatter = "%(levelname)s|%(psm)s|%(asctime)s|%(traceid)s|%(spanid)s|%(hostname)s|%(tags)s|%(message)s"
+    self.formatter = "%(levelname)s|%(psm)s|%(asctime)s.%(msecs)03d+08:00|%(traceid)s|%(spanid)s|%(hostname)s|%(tags)s|%(message)s"
 
 
   def setBasicConfig(self,*kwargs):
@@ -88,7 +91,7 @@ class MLoger(object):
     self.appName = app
 
   def loadBasicConfig(self):
-    logging.basicConfig(filename=self.filename, level=self.level, format=self.formatter)
+    logging.basicConfig(filename=self.filename, level=self.level, format=self.formatter, datefmt='%Y-%m-%dT%I:%M:%S')
 
   # 配置session变量
   def initSession(self):
